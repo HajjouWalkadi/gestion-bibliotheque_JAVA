@@ -112,27 +112,6 @@ public class Main {
             case 4:
                 GlobalController.deleteBook();
                 break;
-            /*case 7:
-            // Ajouter une collection
-            System.out.print("Titre de la collection : ");
-            String titre = sc.nextLine();
-            System.out.print("Auteur de la collection : ");
-            String auteur = sc.nextLine();
-            System.out.print("ISBN de la collection : ");
-            String isbn = sc.nextLine();
-            System.out.print("Quantité de la collection : ");
-            int quantity = sc.nextInt();
-            sc.nextLine(); // Pour consommer la nouvelle ligne
-
-// Créez un objet Collection avec les données saisies
-            Collection nouvelleCollection = new Collection(0, titre, auteur, isbn, quantity);
-
-// Appelez la méthode pour ajouter la collection
-            ajouterCollection(nouvelleCollection);
-
-            System.out.println("La collection a été ajoutée avec succès !");
-            break;
-*/
 
             case 7:
                 // Consommez la nouvelle ligne restante

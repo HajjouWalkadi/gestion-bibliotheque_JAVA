@@ -16,6 +16,9 @@ public class GlobalController {
         for (Collection collection:collections){
             System.out.println("Id   :" +collection.getId());
             System.out.println("Title   :" +collection.getTitre());
+            System.out.println("Auteur   :" +collection.getAuteur());
+            System.out.println("ISBN   :" +collection.getISBN());
+            System.out.println("Quantity   :" +collection.getQuantity());
 
             System.out.println("---------------------------------");
         }
