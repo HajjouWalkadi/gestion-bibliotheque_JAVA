@@ -1,49 +1,4 @@
-/*
-package org.biblio;
 
-import org.biblio.console.Menu;
-import org.biblio.controller.GlobalController;
-import org.biblio.model.Collection;
-import org.biblio.model.Emprunteur;
-import org.biblio.model.Livre;
-
-import java.util.Scanner;
-
-import static org.biblio.database.Db.connect;
-
-public class Main {
-    static Scanner sc  = new Scanner(System.in);
-    public static void main(String[] args){
-        connect();
-        Menu.showmenu();
-        int optionChoosed = sc.nextInt();
-        executeFunctionality(optionChoosed);
-*/
-/*        Collection coll1 = new Collection(1,"Antigone","Jean Anouilh","ISBN 11223344",31);
-        coll1.afficherInfosColl();
-
-        Livre liv1 = new Livre(1,"A11233","disponible",coll1);
-        liv1.afficherInfosLivre();
-
-        Emprunteur Hajjou = new Emprunteur("Hajjou","hajjou@gmail.com","555-987-6543");
-        Hajjou.afficherInfosEmprunteur();*//*
-
-    }
-
-    private static void executeFunctionality(int optionChoosed){
-        switch (optionChoosed){
-            case 1:
-                GlobalController.displayBooks();
-                break;
-            default:
-                System.out.println("not yet");
-                break;
-        }
-
-    }
-
-}
-*/
 
 
 package org.biblio;
@@ -58,6 +13,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static org.biblio.database.Db.connect;
+import static org.biblio.model.Collection.ajouterCollection;
 
 public class Main {
     static Scanner sc = new Scanner(System.in);
@@ -69,26 +25,7 @@ public class Main {
         executeFunctionality(optionChoosed);
     }
 
-    /*private static void executeFunctionality(int optionChoosed) {
-        switch (optionChoosed) {
-            case 1:
-                GlobalController.displayBooks();
 
-                // Create a Collection object (replace these values with actual data)
-                Collection collection = new Collection(6, "DJDC", "NAME Author", "IS12345", 10);
-
-                // Create a Livre object
-                Livre livre = new Livre(5, "NO123", "perdu", collection);
-
-                // Call the ajouterLivre method to insert the Livre object into the database
-                Livre.ajouterLivre(livre);
-
-                break;
-            default:
-                *//*System.out.println("not yet");*//*
-                break;
-
-        }*/
 
     private static void executeFunctionality(int optionChoosed) {
         switch (optionChoosed) {
@@ -100,14 +37,14 @@ public class Main {
                 // Ajouter un livre
                 System.out.print("ID du livre : ");
                 int id = sc.nextInt();
-                sc.nextLine(); // Pour consommer la nouvelle ligne après la saisie de l'ID
+                sc.nextLine();
                 System.out.print("Numéro de livre : ");
                 String numeroLivre = sc.nextLine();
                 System.out.print("Statut du livre : ");
                 String status = sc.nextLine();
                 System.out.print("ID de la collection : ");
                 int collectionId = sc.nextInt();
-                sc.nextLine(); // Pour consommer la nouvelle ligne après la saisie de l'ID de la collection
+                sc.nextLine();
 
                 // Créez un objet Collection avec l'ID de la collection
                 Collection collection = new Collection(collectionId, null, null, null, 0);
@@ -120,9 +57,7 @@ public class Main {
 
                 System.out.println("Le livre a été ajouté avec succès !");
                 break;
-            default:
-                /*System.out.println("not yet");*/
-                break;
+
 
             case 2: // Assuming option 2 is for displaying books
                 List<Livre> livresList = Livre.afficherLivres();
@@ -169,21 +104,64 @@ public class Main {
                     Livre.modifierLivre(updatedLivre);
 
                     System.out.println("Le livre a été mis à jour avec succès !");
-                }
-                break;*/
-
-
-
+                }*/
+                break;
+            case 3:
+                GlobalController.updateBook();
+                break;
             case 4:
-                // Supprimer un livre
-                System.out.print("ID du livre à supprimer : ");
-                int livreId = sc.nextInt();
-                sc.nextLine(); // Pour consommer la nouvelle ligne après la saisie de l'ID
+                GlobalController.deleteBook();
+                break;
+            /*case 7:
+            // Ajouter une collection
+            System.out.print("Titre de la collection : ");
+            String titre = sc.nextLine();
+            System.out.print("Auteur de la collection : ");
+            String auteur = sc.nextLine();
+            System.out.print("ISBN de la collection : ");
+            String isbn = sc.nextLine();
+            System.out.print("Quantité de la collection : ");
+            int quantity = sc.nextInt();
+            sc.nextLine(); // Pour consommer la nouvelle ligne
 
-                // Appelez la méthode pour supprimer le livre
-                Livre.supprimerLivre(livreId);
+// Créez un objet Collection avec les données saisies
+            Collection nouvelleCollection = new Collection(0, titre, auteur, isbn, quantity);
 
-                System.out.println("Le livre a été supprimé avec succès !");
+// Appelez la méthode pour ajouter la collection
+            ajouterCollection(nouvelleCollection);
+
+            System.out.println("La collection a été ajoutée avec succès !");
+            break;
+*/
+
+            case 7:
+                // Consommez la nouvelle ligne restante
+                sc.nextLine();
+
+                // Ajouter une collection
+                System.out.print("Titre de la collection : ");
+                String titre = sc.nextLine();
+                System.out.print("Auteur de la collection : ");
+                String auteur = sc.nextLine();
+                System.out.print("ISBN de la collection : ");
+                String isbn = sc.nextLine();
+                System.out.print("Quantité de la collection : ");
+                int quantity = sc.nextInt();
+                sc.nextLine(); // Pour consommer la nouvelle ligne
+
+                // Créez un objet Collection avec les données saisies
+                Collection nouvelleCollection = new Collection(0, titre, auteur, isbn, quantity);
+
+                // Appelez la méthode pour ajouter la collection
+                ajouterCollection(nouvelleCollection);
+
+                System.out.println("La collection a été ajoutée avec succès !");
+                break;
+            case 8:
+                GlobalController.displayBooks();
+                break;
+            default:
+                System.out.println("not yet");
                 break;
         }
     }
