@@ -10,18 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Livre {
-    private Integer id;
+    private int id;
     private String numeroLivre;
     private String status;
     private Collection collection;
 
-    public Livre(Integer id, String numeroLivre, String status, Collection collection) {
+    public Livre(int id, String numeroLivre, String status, Collection collection) {
         this.id = id;
         this.numeroLivre = numeroLivre;
         this.status = status;
         this.collection = collection;
     }
+    public Livre(){
 
+    }
 
     public Collection getCollection() {
         return collection;
@@ -31,7 +33,7 @@ public class Livre {
         this.collection = collection;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -197,7 +199,7 @@ public class Livre {
         return livres;
     }
 
-    public static void modifierLivre(Livre livre) {
+    public void update() {
         Connection connection = Db.connect();
         if (connection == null) {
             System.err.println("La connexion à la base de données a échoué.");
@@ -206,10 +208,10 @@ public class Livre {
 
         String sql = "UPDATE livre SET numeroLivre = ?, status = ?, collection_id = ? WHERE id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, livre.getNumeroLivre());
-            preparedStatement.setString(2, livre.getStatus());
-            preparedStatement.setInt(3, livre.getCollection().getId());
-            preparedStatement.setInt(4, livre.getId());
+            preparedStatement.setString(1, this.numeroLivre);
+            preparedStatement.setString(2, this.status);
+            preparedStatement.setInt(3, this.collection.getId());
+            preparedStatement.setInt(4, this.id);
 
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
@@ -228,6 +230,26 @@ public class Livre {
                 e.printStackTrace();
             }
         }
+    }
+    public static Livre checkExisting(String numeroLivre){
+        Livre livre = new Livre();
+        String sql = "SELECT * FROM livre where numeroLivre = ?";
+        try {
+            PreparedStatement preparedStatement = Db.connect().prepareStatement(sql);
+            preparedStatement.setString(1,numeroLivre );
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                livre.id = resultSet.getInt("id");
+                livre.numeroLivre = resultSet.getString("numeroLivre");
+                livre.status = resultSet.getString("status");
+                Collection collection= new Collection();
+                collection.setId(resultSet.getInt("id"));
+                livre.collection  = collection;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return livre;
     }
 
 
