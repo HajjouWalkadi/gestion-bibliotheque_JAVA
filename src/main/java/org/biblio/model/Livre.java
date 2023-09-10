@@ -57,37 +57,6 @@ public class Livre {
         this.status = status;
     }
 
-    /*public static void ajouterLivre(Livre livre) {
-        Connection connection = Db.connect();
-        if (connection == null) {
-            System.err.println("La connexion à la base de données a échoué.");
-            return;
-        }
-
-        String sql = "INSERT INTO livres (numero_livre, status, collection_id) VALUES (?, ?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, livre.getNumeroLivre());
-            preparedStatement.setString(2, livre.getStatus());
-            preparedStatement.setInt(3, livre.getCollection().getId());
-
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Livre ajouté avec succès !");
-            } else {
-                System.err.println("Échec de l'ajout du livre.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
 
     public static void ajouterLivre(Livre livre) {
         Connection connection = Db.connect();
@@ -128,6 +97,8 @@ public class Livre {
         }
     }
 
+
+
     public static void supprimerLivre(int livreId) {
         Connection connection = Db.connect();
         if (connection == null) {
@@ -159,45 +130,6 @@ public class Livre {
     }
 
 
-    public static List<Livre> afficherLivres() {
-        List<Livre> livres = new ArrayList<>();
-        Connection connection = Db.connect();
-        if (connection == null) {
-            System.err.println("La connexion à la base de données a échoué.");
-            return livres;
-        }
-
-        String sql = "SELECT * FROM livre";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String numeroLivre = resultSet.getString("numeroLivre");
-                String status = resultSet.getString("status");
-
-                // You should retrieve the collection_id and create a Collection object here
-                // Example: int collectionId = resultSet.getInt("collection_id");
-                // Then create a Collection object using the collectionId
-
-                // Assuming you have a Collection object, you can create a Livre object
-                // with the retrieved data and the Collection object
-                // Livre livre = new Livre(id, numeroLivre, status, collection);
-                // livres.add(livre);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return livres;
-    }
 
     public void update() {
         Connection connection = Db.connect();
@@ -231,6 +163,8 @@ public class Livre {
             }
         }
     }
+
+
     public static Livre checkExisting(String numeroLivre){
         Livre livre = new Livre();
         String sql = "SELECT * FROM livre where numeroLivre = ?";
@@ -251,8 +185,6 @@ public class Livre {
         }
         return livre;
     }
-
-
 
 
 
