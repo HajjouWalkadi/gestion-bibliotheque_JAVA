@@ -1,11 +1,13 @@
 package org.biblio.controller;
 
+import org.biblio.console.Menu;
 import org.biblio.model.Collection;
 import org.biblio.model.Livre;
 
 import java.util.List;
 import java.util.Scanner;
 
+import static org.biblio.database.Db.connect;
 import static org.biblio.model.Collection.ajouterCollection;
 import static org.biblio.model.Collection.getCollections;
 
@@ -64,7 +66,9 @@ public class GlobalController {
         Livre.ajouterLivre(livre);
 
         System.out.println("Le livre a été ajouté avec succès !");
+
     }
+
 
     public static void deleteBook() {
         System.out.print("ID du livre à supprimer : ");
@@ -82,7 +86,7 @@ public class GlobalController {
         String numeroLivre = sc.nextLine();
         Livre livre = Livre.checkExisting(numeroLivre);
         if (livre.getId() == 0) {
-            System.out.println("there is no books ith this number");
+            System.out.println("there is no books with this number");
             updateBook();
         } else {
             livre = getUpdatedBookInfo(livre);

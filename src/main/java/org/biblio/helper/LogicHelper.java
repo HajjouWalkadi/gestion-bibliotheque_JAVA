@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class LogicHelper {
-    private  static final Scanner scanner = new Scanner(System.in);
+    public static final Scanner scanner = new Scanner(System.in);
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
 
