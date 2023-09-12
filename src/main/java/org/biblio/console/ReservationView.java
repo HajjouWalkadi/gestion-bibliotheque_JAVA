@@ -6,6 +6,9 @@ import org.biblio.model.Collection;
 import org.biblio.model.Emprunt;
 import org.biblio.model.Emprunteur;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 public class ReservationView {
 
     private static Collection collection = new Collection();
@@ -18,14 +21,13 @@ public class ReservationView {
         setCollectionByISBN();
         setEmprunteurByEmail();
 
-        if(collection.getQuantity_disponible() == 0){
+        if (collection.getQuantity_disponible() == 0) {
             Printer.print("this book is not available");
             return;
         }
 
         emprunt.setCollection_id(collection.getId());
         emprunt.setEmprunteur_id(emprunteur.getId());
-
 
 
         setReservationQuantity();
@@ -75,19 +77,54 @@ public class ReservationView {
 
     private static void setReservationQuantity() {
         int quanity;
-        while (true){
+        while (true) {
             Printer.print("enter the quantity");
             quanity = Integer.parseInt(LogicHelper.scan());
 
-            if(quanity > collection.getQuantity_disponible()){
+            if (quanity > collection.getQuantity_disponible()) {
                 Printer.print("this quantity is not available, try again");
-                Printer.print("this quantity available is :" + collection.getQuantity_disponible());
-            }
-            else {
+                Printer.print("the quantity available is :" + collection.getQuantity_disponible());
+            } else {
                 emprunt.setQuantity(quanity);
                 break;
             }
         }
+    }
+
+    public static void retournerBook() {
+        setCollectionByISBN();
+        setEmprunteurByEmail();
+        emprunt.setCollection_id(collection.getId());
+        emprunt.setEmprunteur_id(emprunteur.getId());
+        int quantityReturned = setReturnQuantity();
+
+
+        if (!Emprunt.existsEmprunt(collection.getId(), emprunteur.getId())) {
+            Printer.print("No record of borrowing this book by the borrower.");
+        } else {
+
+
+            Emprunt.returnBook(collection.getId(), emprunteur.getId(), quantityReturned);
+            Printer.print("Book with ISBN " + collection.getISBN() + " has been successfully returned.");
+
+        }
+    }
+
+    public static int setReturnQuantity() {
+        int quantityReturn;
+        while (true) {
+            Printer.print("enter the quantity to return ");
+            quantityReturn = Integer.parseInt(LogicHelper.scan());
+            int quantityBorrowed = Emprunt.getQuantityBorrowed(collection.getId(), emprunteur.getId());
+            if (quantityReturn > quantityBorrowed) {
+                Printer.print("You cannot return more books than you borrowed.");
+                Printer.print("this quantity you borrowed is :" + quantityBorrowed);
+            } else {
+
+                break;
+            }
+        }
+        return quantityReturn;
     }
 
 

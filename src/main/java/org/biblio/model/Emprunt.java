@@ -5,11 +5,12 @@ import org.biblio.helper.Printer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Date;
 
 public class Emprunt {
+    public static  Collection collection=new Collection();
     private Integer id;
     private Date dateDebut;
     private Date dateFin;
@@ -110,6 +111,150 @@ public class Emprunt {
             e.printStackTrace();
         }
 
+    }
+
+    public static boolean existsEmprunt(int collectionId, int emprunteurId) {
+        try {
+
+            String sql = "SELECT COUNT(*) FROM emprunt WHERE collection_id = ? AND emprunteur_id = ?";
+            PreparedStatement statement = Db.connect().prepareStatement(sql);
+            statement.setInt(1, collectionId);
+            statement.setInt(2, emprunteurId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0; // If count is greater than 0, a matching record exists
+            }
+
+            return false; // No matching record found
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle database errors here
+            return false; // Assume no record exists in case of an error
+        }
+    }
+
+    public static int getQuantityBorrowed(int collectionId, int emprunteurId) {
+        int totalQuantityBorrowed = 0;
+
+        try {
+            String sql = "SELECT SUM(quantity) FROM emprunt WHERE collection_id = ? AND emprunteur_id = ?";
+
+            PreparedStatement statement = Db.connect().prepareStatement(sql);
+            statement.setInt(1, collectionId);
+            statement.setInt(2, emprunteurId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                totalQuantityBorrowed = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle database errors here
+        }
+
+        return totalQuantityBorrowed;
+    }
+
+
+    public static void returnBook(int collectionId, int emprunteurId, int quantityReturned) {
+        Connection con = Db.connect();
+
+        try {
+            // Check if an existing reservation with the specified collectionId, emprunteurId, and quantity exists
+            String query = "SELECT * FROM emprunt WHERE collection_id = ? AND emprunteur_id = ? AND quantity >= ? AND retour = 0";
+            PreparedStatement checkStatement = con.prepareStatement(query);
+            checkStatement.setInt(1, collectionId);
+            checkStatement.setInt(2, emprunteurId);
+            checkStatement.setInt(3, quantityReturned);
+            ResultSet resultSet = checkStatement.executeQuery();
+
+            if (resultSet.next()) {
+
+                int empruntId = resultSet.getInt("id");
+
+
+                // Update the emprunt to indicate that it has been returned
+                String updateQuery = "UPDATE emprunt SET retour = 1 WHERE id = ? AND  quantity = ? ";
+                PreparedStatement updateStatement = con.prepareStatement(updateQuery);
+                updateStatement.setInt(1, empruntId);
+                updateStatement.setInt(2, quantityReturned);
+                int rowsUpdated = updateStatement.executeUpdate();
+
+
+                if (rowsUpdated > 0) {
+                    returnCollectionQuantity(collectionId, quantityReturned);
+                    Printer.print("Book returned successfully.");
+                } else {
+                    Printer.print("Failed to update the reservation status.");
+                }
+
+
+                // Update the emprunt quntity
+                String updateQueryQuantity = "UPDATE emprunt SET quantity = quantity-? WHERE id = ?";
+                PreparedStatement updateStatementQuantity = con.prepareStatement(updateQueryQuantity);
+                updateStatementQuantity.setInt(1, quantityReturned);
+                updateStatementQuantity.setInt(2, empruntId);
+
+                int rowsUpdatedQuantity = updateStatementQuantity.executeUpdate();
+
+
+                if (rowsUpdatedQuantity > 0) {
+                    returnCollectionQuantity(collectionId, quantityReturned);
+                    Printer.print("Book returned successfully.");
+                } else {
+                    Printer.print("Failed to update the reservation status (quantity).");
+                }
+            } else {
+                Printer.print("No matching reservation found for return.");
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void updateEmpruntReturn(int empruntId) {
+    }
+
+    public static void returnCollectionQuantity(int collectionId, int quantityReturned) {
+        Connection con = Db.connect();
+
+        try {
+            String query = "UPDATE collection SET quantity_disponible = quantity_disponible + ? WHERE id = ?";
+            PreparedStatement preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, quantityReturned);
+            preparedStatement.setInt(2, collectionId);
+
+            //System.out.println(preparedStatement);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                Printer.print("Collection quantity updated successfully.");
+            } else {
+                Printer.print("Failed to update collection quantity.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
