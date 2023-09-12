@@ -6,15 +6,13 @@ package org.biblio;
 import org.biblio.console.Menu;
 import org.biblio.console.ReservationView;
 import org.biblio.controller.GlobalController;
-import org.biblio.model.Collection;
-import org.biblio.model.Emprunteur;
-import org.biblio.model.Livre;
+import org.biblio.model.Search;
+import org.biblio.model.Statistiques;
 
-import java.util.List;
 import java.util.Scanner;
 
 import static org.biblio.database.Db.connect;
-import static org.biblio.model.Collection.ajouterCollection;
+import static org.biblio.helper.LogicHelper.scanner;
 
 public class Main {
     static Scanner sc = new Scanner(System.in);
@@ -30,9 +28,7 @@ public class Main {
 
     private static void executeFunctionality(int optionChoosed) {
         switch (optionChoosed) {
-          /*  case 1:
-                GlobalController.displayBooks();
-                break;*/
+
 
             case 1:
                 GlobalController.addBook();
@@ -63,8 +59,41 @@ public class Main {
             case 10:
                 GlobalController.deleteCollection();
                 break;
+
+            case 6:
+                ReservationView.retournerBook();
+                break;
+            case 14:
+                // Exit the program
+                System.out.println("Exiting the library program. Goodbye!");
+                scanner.close();
+                System.exit(0);
+                break;
+            case 11:
+
+                Statistiques rapport = new Statistiques();
+                rapport.genererRapport();
+            break;
+            case 12:
+                sc.nextLine();
+                Search searchTitle  = new Search();
+                System.out.println("Enter le titre ");
+                String title = sc.nextLine();
+                // Search by title
+                searchTitle.searchByTitle(title);
+
+                break;
+            case 13:
+                sc.nextLine();
+                Search searchAuthor  = new Search();
+                System.out.println("Enter le nom d'auteur' ");
+                String author = sc.nextLine();
+                // Search by author
+                searchAuthor.searchByAuthor(author);
+
+                break;
             default:
-                System.out.println("not yet");
+                System.out.println("Invalid choice. Please try again.");
                 break;
         }
     }
