@@ -72,43 +72,27 @@ public class Emprunteur {
 
 
     public  Emprunteur getEmprunteurByEmail(String email) {
-        Connection con = Db.connect();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        Emprunteur emprunteur = null;
+        //Connection con = Db.connect();
+        //PreparedStatement statement = null;
+        //ResultSet resultSet = null;
+        //Emprunteur emprunteur = null;
 
-        try {
+
             String query = "SELECT * FROM emprunteur WHERE email = ?";
-            statement = con.prepareStatement(query);
+            try(PreparedStatement statement = Db.connect().prepareStatement(query)){
             statement.setString(1, email);
-            resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                this.mapData(resultSet);
-                return  this;
-            } else {
-                return null;
+            try (ResultSet resultSet = statement.executeQuery()) {
+                 return this.mapData(resultSet);
             }
+
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+           // e.printStackTrace();
+                throw new RuntimeException(e);
         }
 
-        return emprunteur;
+
     }
 
     public  Emprunteur mapData(ResultSet resultSet) {
