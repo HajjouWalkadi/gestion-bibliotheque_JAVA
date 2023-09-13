@@ -45,7 +45,7 @@ public class ReservationView {
             emprunteur = emprunteur.getEmprunteurByEmail(LogicHelper.scan());
             if (emprunteur == null) {
                 emprunteur = new Emprunteur();
-                Printer.print("This ISBN was not found.");
+                Printer.print("This email was not found.");
             } else {
                 Printer.printModel(emprunteur);
                 break;

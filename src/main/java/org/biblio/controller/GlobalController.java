@@ -2,6 +2,7 @@ package org.biblio.controller;
 
 import org.biblio.console.Menu;
 import org.biblio.model.Collection;
+import org.biblio.model.Emprunteur;
 import org.biblio.model.Livre;
 
 import java.util.List;
@@ -200,6 +201,30 @@ public class GlobalController {
 
     }
 
+    public static void addEmprunteur() {
+        // Ajouter une collection
+        System.out.print("Entrer le nom de l'emprunteur : ");
+        String name = sc.nextLine();
+        System.out.print("Entrer l'email' de l'emprunteur : ");
+        String email = sc.nextLine();
+        System.out.print("Entrer le numéro de téléphone de l'emprunteur : ");
+        String phone = sc.nextLine();
 
+        /*// Créez un objet Collection avec les données saisies
+        Emprunteur emprunteur = new Emprunteur(name,email, phone);
+
+        // Appelez la méthode pour ajouter la collection
+        addEmprunteur(emprunteur);
+
+        System.out.println("La collection a été ajoutée avec succès !");*/
+
+        Emprunteur emprunteur = new Emprunteur();
+        emprunteur.setName(name);
+        emprunteur.setEmail(email);
+        emprunteur.setPhone(phone);
+
+        emprunteur.ajouterEmprunteur(emprunteur);
+        System.out.println("L'emprunteur a été ajouté avec succès !");
+    }
 
 }

@@ -52,7 +52,8 @@ public class Menu {
         System.out.println(resetColor+"11. Voir les statistiques");
         System.out.println(resetColor+"12. Rechercher par le titre");
         System.out.println(resetColor+"13. Rechercher par le l'auteur");
-        System.out.println(resetColor+"14. Quitter\n\n");
+        System.out.println(resetColor+"14. Ajouter un emprunteur");
+        System.out.println(resetColor+"15. Quitter\n\n");
         System.out.print(resetColor+"Veuillez sélectionner une option : \n");
         System.out.println(Rose+"                                                    \n" +
                 "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +

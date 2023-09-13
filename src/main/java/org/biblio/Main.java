@@ -19,10 +19,14 @@ public class Main {
 
     public static void main(String[] args) {
         connect();
-        Menu.showmenu();
-        Menu.Options();
-        int optionChoosed = sc.nextInt();
-        executeFunctionality(optionChoosed);
+        //while (true) {
+
+
+            Menu.showmenu();
+            Menu.Options();
+            int optionChoosed = sc.nextInt();
+            executeFunctionality(optionChoosed);
+        //}
     }
 
 
@@ -46,7 +50,9 @@ public class Main {
             case 5:
                 ReservationView.reserve();
                 break;
-
+            case 6:
+                ReservationView.retournerBook();
+                break;
             case 7:
                 GlobalController.addCollection();
                 break;
@@ -59,25 +65,14 @@ public class Main {
             case 10:
                 GlobalController.deleteCollection();
                 break;
-
-            case 6:
-                ReservationView.retournerBook();
-                break;
-            case 14:
-                // Exit the program
-                System.out.println("Exiting the library program. Goodbye!");
-                scanner.close();
-                System.exit(0);
-                break;
             case 11:
-
                 Statistiques rapport = new Statistiques();
                 rapport.genererRapport();
             break;
             case 12:
                 sc.nextLine();
                 Search searchTitle  = new Search();
-                System.out.println("Enter le titre ");
+                System.out.println("Entrer le titre ");
                 String title = sc.nextLine();
                 // Search by title
                 searchTitle.searchByTitle(title);
@@ -91,6 +86,15 @@ public class Main {
                 // Search by author
                 searchAuthor.searchByAuthor(author);
 
+                break;
+            case 14:
+            GlobalController.addEmprunteur();
+                break;
+            case 15:
+                // Exit the program
+                System.out.println("Exiting the library program. Goodbye!");
+                scanner.close();
+                System.exit(0);
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");

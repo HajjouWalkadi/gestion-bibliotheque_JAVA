@@ -2,10 +2,7 @@ package org.biblio.model;
 
 import org.biblio.database.Db;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Emprunteur {
     private Integer id;
@@ -116,5 +113,48 @@ public class Emprunteur {
 
 
 
+        // Méthode pour ajouter un emprunteur
+        public void ajouterEmprunteur(Emprunteur emprunteur) {
+            Connection connection = Db.connect();
+            if (connection == null) {
+                System.err.println("La connexion à la base de données a échoué.");
+                return;
+            }
+            String sql = "INSERT INTO emprunteur (name, email, phone) VALUES (?, ?, ?)";
 
-}
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, emprunteur.getName());
+                preparedStatement.setString(2, emprunteur.getEmail());
+                preparedStatement.setString(3, emprunteur.getPhone());
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Méthode pour supprimer un emprunteur par ID
+      /*  public void supprimerEmprunteur(int id) {
+            Connection connection = Db.connect();
+            if (connection == null) {
+                System.err.println("La connexion à la base de données a échoué.");
+                return;
+            }
+            String sql = "DELETE FROM emprunteurs WHERE id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setInt(1, id);
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }*/
+
+
+
+
+
+
+        }
+
+
+
