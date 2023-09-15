@@ -7,7 +7,7 @@ public class Db {
     private  static  Connection  con ;
     public static Connection connect(){
         try {
-             con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/biblio", "root",
+             con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/biblio_2", "root",
                     "");
             System.out.println(" connected !!");
         } catch (Exception e) {

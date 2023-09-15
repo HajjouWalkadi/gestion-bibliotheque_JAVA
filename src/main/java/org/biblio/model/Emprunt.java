@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 public class Emprunt {
-    public static  Collection collection=new Collection();
+    private Livre livre;
     private Integer id;
     private Date dateDebut;
     private Date dateFin;
@@ -25,6 +25,10 @@ public class Emprunt {
     public Emprunt() {
         this.retour = false;
         this.dateDebut = new Date();
+    }
+
+    public void setLivre(Livre livre) {
+        this.livre = livre;
     }
 
     public Integer getId() {
@@ -86,19 +90,18 @@ public class Emprunt {
 
     public  void  reserve(){
 
-        Connection con = Db.connect(); // Assuming you have a Db class for database connection
+        Connection con = Db.connect();
 
         try {
-            String query = "INSERT INTO emprunt (dateDebut, dateFin, retour, emprunteur_id, collection_id, quantity) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO emprunt (dateDebut, dateFin, retour, emprunteur_id, livre_id, quantity) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = con.prepareStatement(query);
 
-            // Set values for the PreparedStatement
-            preparedStatement.setDate(1, new java.sql.Date(dateDebut.getTime()));
-            preparedStatement.setDate(2, new java.sql.Date(dateFin.getTime()));
-            preparedStatement.setBoolean(3, retour);
-            preparedStatement.setInt(4, emprunteur_id);
-            preparedStatement.setInt(5, collection_id);
-            preparedStatement.setInt(6, quantity);
+            preparedStatement.setDate(1, new java.sql.Date(this.dateDebut.getTime()));
+            preparedStatement.setDate(2, new java.sql.Date(this.dateFin.getTime()));
+            preparedStatement.setBoolean(3, this.retour);
+            preparedStatement.setInt(4, this.emprunteur_id);
+            preparedStatement.setInt(5, this.livre.getId());
+            preparedStatement.setInt(6, this.quantity);
 
             int rowsInserted = preparedStatement.executeUpdate();
 
@@ -116,7 +119,7 @@ public class Emprunt {
     public static boolean existsEmprunt(int collectionId, int emprunteurId) {
         try {
 
-            String sql = "SELECT COUNT(*) FROM emprunt WHERE collection_id = ? AND emprunteur_id = ?";
+            String sql = "SELECT COUNT(*) FROM emprunt JOIN livre ON livre.id = emprunt.livre_id WHERE livre.collection_id = ? AND emprunteur_id = ?";
             PreparedStatement statement = Db.connect().prepareStatement(sql);
             statement.setInt(1, collectionId);
             statement.setInt(2, emprunteurId);
@@ -129,8 +132,8 @@ public class Emprunt {
 
             return false; // No matching record found
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle database errors here
-            return false; // Assume no record exists in case of an error
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -138,7 +141,9 @@ public class Emprunt {
         int totalQuantityBorrowed = 0;
 
         try {
-            String sql = "SELECT SUM(quantity) FROM emprunt WHERE collection_id = ? AND emprunteur_id = ?";
+            String sql = "SELECT SUM(quantity) FROM emprunt " +
+                    "JOIN livre ON livre.id = emprunt.livre_id " +
+                    "WHERE livre.collection_id = ? AND emprunt.emprunteur_id = ?";
 
             PreparedStatement statement = Db.connect().prepareStatement(sql);
             statement.setInt(1, collectionId);
@@ -148,9 +153,10 @@ public class Emprunt {
 
             if (resultSet.next()) {
                 totalQuantityBorrowed = resultSet.getInt(1);
+                System.out.println(totalQuantityBorrowed);
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle database errors here
+            e.printStackTrace();
         }
 
         return totalQuantityBorrowed;
@@ -161,8 +167,8 @@ public class Emprunt {
         Connection con = Db.connect();
 
         try {
-            // Check if an existing reservation with the specified collectionId, emprunteurId, and quantity exists
-            String query = "SELECT * FROM emprunt WHERE collection_id = ? AND emprunteur_id = ? AND quantity >= ? AND retour = 0";
+
+            String query = "SELECT * FROM emprunt JOIN livre ON livre.id = emprunt.livre_id WHERE livre.collection_id = ? AND emprunteur_id = ? AND quantity >= ? AND retour = 0";
             PreparedStatement checkStatement = con.prepareStatement(query);
             checkStatement.setInt(1, collectionId);
             checkStatement.setInt(2, emprunteurId);
@@ -174,7 +180,7 @@ public class Emprunt {
                 int empruntId = resultSet.getInt("id");
 
 
-                // Update the emprunt to indicate that it has been returned
+
                 String updateQuery = "UPDATE emprunt SET retour = 1 WHERE id = ? AND  quantity = ? ";
                 PreparedStatement updateStatement = con.prepareStatement(updateQuery);
                 updateStatement.setInt(1, empruntId);
@@ -190,7 +196,7 @@ public class Emprunt {
                 }
 
 
-                // Update the emprunt quntity
+
                 String updateQueryQuantity = "UPDATE emprunt SET quantity = quantity-? WHERE id = ?";
                 PreparedStatement updateStatementQuantity = con.prepareStatement(updateQueryQuantity);
                 updateStatementQuantity.setInt(1, quantityReturned);

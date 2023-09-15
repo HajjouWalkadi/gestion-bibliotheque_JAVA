@@ -5,7 +5,7 @@ import java.sql.*;
 public class Search {
     public Search() {
         // Initialisez la connexion à la base de données
-        String url = "jdbc:mysql://localhost/biblio";
+        String url = "jdbc:mysql://localhost/biblio_2";
         String username = "root";
         String password = "";
 
@@ -26,6 +26,8 @@ public class Search {
             // Execute the query and retrieve the results
             ResultSet resultSet = preparedStatement.executeQuery();
 
+            boolean foundBooks = false;
+
             // Display the search results
             System.out.println("Books matching title '" + title + "':");
             while (resultSet.next()) {
@@ -35,10 +37,15 @@ public class Search {
                 System.out.println("Title: " + bookTitle);
                 System.out.println("Author: " + author);
                 System.out.println();
+
+                foundBooks = true;
             }
 
             // Close resources
             preparedStatement.close();
+            if (!foundBooks) {
+                System.out.println("No matching books found.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -46,15 +53,15 @@ public class Search {
 
     public void searchByAuthor(String author) {
         try {
-            // Prepare a SQL query to search for books by author
             String query = "SELECT * FROM collection WHERE auteur LIKE ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, "%" + author + "%");
 
-            // Execute the query and retrieve the results
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // Display the search results
+            boolean foundAuthor = false;
+
             System.out.println("Books by author '" + author + "':");
             while (resultSet.next()) {
                 String bookTitle = resultSet.getString("titre");
@@ -63,10 +70,15 @@ public class Search {
                 System.out.println("Title: " + bookTitle);
                 System.out.println("Author: " + bookAuthor);
                 System.out.println();
+
+                foundAuthor = true;
             }
 
-            // Close resources
+
             preparedStatement.close();
+            if (!foundAuthor){
+                System.out.println("No matching author found.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

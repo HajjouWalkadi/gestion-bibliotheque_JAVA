@@ -46,7 +46,7 @@ public class Menu {
         System.out.println(resetColor+"5. Emprunter un livre");
         System.out.println(resetColor+"6. Retourner un livre");
         System.out.println(resetColor+"7. Ajouter une collection");
-        System.out.println(resetColor+"8. Afficher une collection");
+        System.out.println(resetColor+"8. Afficher les collections");
         System.out.println(resetColor+"9. Modifier une collection");
         System.out.println(resetColor+"10. Supprimer une collection");
         System.out.println(resetColor+"11. Voir les statistiques");

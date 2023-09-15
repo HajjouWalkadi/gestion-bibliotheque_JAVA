@@ -1,10 +1,15 @@
 package org.biblio.controller;
 
 import org.biblio.console.Menu;
+import org.biblio.database.Db;
 import org.biblio.model.Collection;
 import org.biblio.model.Emprunteur;
 import org.biblio.model.Livre;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -30,24 +35,8 @@ public class GlobalController {
 
     }
 
-    /*   public static void displayBooks(){
-           List<Collection> collections = Collection.getCollections(null);
-           for (Collection collection:collections){
-               System.out.println("Id   :" +collection.getId());
-               System.out.println("Title   :" +collection.getTitre());
-               System.out.println("Auteur   :" +collection.getAuteur());
-               System.out.println("ISBN   :" +collection.getISBN());
-               System.out.println("Quantity   :" +collection.getQuantity());
-
-               System.out.println("---------------------------------");
-           }
-
-       }*/
     public static void addBook() {
-        // Ajouter un livre
-        System.out.print("ID du livre : ");
-        int id = sc.nextInt();
-        sc.nextLine();
+
         System.out.print("Numéro de livre : ");
         String numeroLivre = sc.nextLine();
         System.out.print("Statut du livre : ");
@@ -57,13 +46,10 @@ public class GlobalController {
 
         sc.nextLine();
 
-        // Créez un objet Collection avec l'ID de la collection
         Collection collection = new Collection(collectionId, null, null, null, 0);
 
-        // Créez un objet Livre avec les données saisies
-        Livre livre = new Livre(id, numeroLivre, status, collection);
+        Livre livre = new Livre(numeroLivre, status, collection);
 
-        // Appelez la méthode pour ajouter le livre
         Livre.ajouterLivre(livre);
 
         System.out.println("Le livre a été ajouté avec succès !");
@@ -94,6 +80,45 @@ public class GlobalController {
             livre.update();
         }
     }
+
+   public static void displayBook() {
+       try (Connection connection = Db.connect()) {
+           if (connection == null) {
+               System.err.println("La connexion à la base de données a échoué.");
+               return;
+           }
+
+
+           String query = "SELECT livre.*, collection.titre, collection.auteur " +
+                   "FROM livre " +
+                   "INNER JOIN collection ON livre.collection_id = collection.id";
+
+           try (PreparedStatement preparedStatement = connection.prepareStatement(query);
+                ResultSet resultSet = preparedStatement.executeQuery()) {
+
+               // Display the list of books
+               System.out.println("List of Books:");
+               while (resultSet.next()) {
+                   int bookId = resultSet.getInt("livre.id");
+                   String bookTitle = resultSet.getString("livre.numeroLivre");
+                   String bookStatus = resultSet.getString("livre.status");
+                   String collectionTitle = resultSet.getString("collection.titre");
+                   String collectionAuthor = resultSet.getString("collection.auteur");
+
+
+                   System.out.println("ID du livre: " + bookId);
+                   System.out.println("Numéro du livre: " + bookTitle);
+                   System.out.println("Status: " + bookStatus);
+                   System.out.println("Titre de la collection: " + collectionTitle);
+                   System.out.println("Auteur de la collection: " + collectionAuthor);
+                   System.out.println();
+               }
+           }
+       } catch (SQLException e) {
+           e.printStackTrace();
+       }
+   }
+
 
     public static Livre getUpdatedBookInfo(Livre livre) {
         System.out.println("new book number");
@@ -142,7 +167,6 @@ public class GlobalController {
     }
 
     public static void addCollection() {
-        // Ajouter une collection
         System.out.print("Titre de la collection : ");
         String titre = sc.nextLine();
         System.out.print("Auteur de la collection : ");
@@ -151,12 +175,10 @@ public class GlobalController {
         String isbn = sc.nextLine();
         System.out.print("Quantité total de la collection : ");
         int quantity = sc.nextInt();
-        sc.nextLine(); // Pour consommer la nouvelle ligne
+        sc.nextLine();
 
-        // Créez un objet Collection avec les données saisies
         Collection nouvelleCollection = new Collection(0, titre, auteur, isbn, quantity);
 
-        // Appelez la méthode pour ajouter la collection
         ajouterCollection(nouvelleCollection);
 
         System.out.println("La collection a été ajoutée avec succès !");
@@ -176,10 +198,10 @@ public class GlobalController {
 
     public static void updateCollection() {
         Scanner sc = new Scanner(System.in);
-        // Prompt for updated information
+
         System.out.print("ID de la collection à modifier : ");
         int collectionId = sc.nextInt();
-        sc.nextLine(); // Consume the newline character
+        sc.nextLine();
 
         System.out.print("Nouveau titre (ou appuyez sur Entrée pour conserver le titre actuel) : ");
         String newTitre = sc.nextLine();
@@ -189,9 +211,9 @@ public class GlobalController {
         String newIsbn = sc.nextLine();
         System.out.print("Nouvelle quantité : ");
         int newQuantity = sc.nextInt();
-        sc.nextLine(); // Consume the newline character
+        sc.nextLine();
 
-// Update the collection
+
         Collection.updateCollection(collectionId, newTitre.isEmpty() ? null : newTitre,
                 newAuteur.isEmpty() ? null : newAuteur,
                 newIsbn.isEmpty() ? null : newIsbn,
@@ -202,7 +224,7 @@ public class GlobalController {
     }
 
     public static void addEmprunteur() {
-        // Ajouter une collection
+
         System.out.print("Entrer le nom de l'emprunteur : ");
         String name = sc.nextLine();
         System.out.print("Entrer l'email' de l'emprunteur : ");
@@ -210,13 +232,6 @@ public class GlobalController {
         System.out.print("Entrer le numéro de téléphone de l'emprunteur : ");
         String phone = sc.nextLine();
 
-        /*// Créez un objet Collection avec les données saisies
-        Emprunteur emprunteur = new Emprunteur(name,email, phone);
-
-        // Appelez la méthode pour ajouter la collection
-        addEmprunteur(emprunteur);
-
-        System.out.println("La collection a été ajoutée avec succès !");*/
 
         Emprunteur emprunteur = new Emprunteur();
         emprunteur.setName(name);

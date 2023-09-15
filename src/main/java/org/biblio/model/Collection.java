@@ -7,10 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Collection {
-    private static Integer id;
+    private int id;
     private String titre;
     private String auteur;
     private String ISBN;
@@ -18,9 +19,10 @@ public class Collection {
     private Integer quantity_disponible;
 
     public Collection(int id, String titre, String auteur, String isbn, int quantity_total, int quantity_disponible) {
+        this.id = id;
         this.titre = titre;
         this.auteur = auteur;
-        this.ISBN = ISBN;
+        this.ISBN = isbn;
         this.quantity_total = quantity_total;
         this.quantity_disponible = quantity_disponible;
     }
@@ -38,13 +40,14 @@ public class Collection {
             // Prepare the SQL query to retrieve the collection by id
             String sql = "SELECT * FROM collection WHERE id = ?";
             preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(1, collectionId);
 
             // Execute the query and retrieve the result set
             resultSet = preparedStatement.executeQuery();
 
             // Check if a collection was found
             if (resultSet.next()) {
+                System.out.println(resultSet.getInt("id"));
                 // Create a Collection object and populate it with the retrieved data
                 collection = new Collection();
                 collection.setId(resultSet.getInt("id"));
@@ -93,7 +96,8 @@ public class Collection {
     }
 
 
-    public Collection(Integer id, String titre, String auteur, String ISBN, Integer quantityTotal) {
+    public Collection(int id, String titre, String auteur, String ISBN, Integer quantityTotal) {
+        System.out.println(id);
         this.id = id;
         this.titre = titre;
         this.auteur = auteur;
@@ -126,7 +130,31 @@ public class Collection {
         return ISBN;
     }
 
+    public  static List<Livre> getCollectionLivres(int collectionId){
+        List<Livre> livres = new ArrayList<Livre>();
+        String sql = "SELECT * FROM livre WHERE collection_id = ? AND status = ?";
+        Collection collection = new Collection();
+        collection.setId(collectionId);
+        try {
+            PreparedStatement preparedStatement = Db.connect().prepareStatement(sql);
+            preparedStatement.setInt(1,collectionId);
+            preparedStatement.setString(2,"disponible");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                Livre livre = new Livre(
+                        resultSet.getInt("id"),
+                        resultSet.getString("numeroLivre"),
+                        resultSet.getString("status"),
+                        collection
+                );
+                livres.add(livre);
+            }
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return livres;
+    }
     public static List<Collection> getCollections(String titre) {
         List<Collection> collections = new ArrayList<Collection>();
         String sqlQuery = "SELECT * FROM collection";
@@ -198,7 +226,6 @@ public class Collection {
         }
 
         try {
-            // First, update livre.collection_id to NULL
             String updateSql = "UPDATE livre SET collection_id = NULL WHERE collection_id = ?";
             try (PreparedStatement updateStatement = connection.prepareStatement(updateSql)) {
                 updateStatement.setInt(1, collectionId);
@@ -235,61 +262,60 @@ public class Collection {
     }
 
 
-    public static void updateCollection(int id, String titre, String auteur, String isbn, int quantity) {
-        Connection connection = Db.connect();
-        if (connection == null) {
-            System.err.println("La connexion à la base de données a échoué.");
-            return;
+
+public static void updateCollection(int id, String titre, String auteur, String isbn, int quantity) {
+    Connection connection = Db.connect();
+    if (connection == null) {
+        System.err.println("La connexion à la base de données a échoué.");
+        return;
+    }
+
+    StringBuilder sql = new StringBuilder("UPDATE collection SET");
+
+    List<Object> params = new ArrayList<>();
+
+
+    if (titre != null) {
+        sql.append(" titre = ?,");
+        params.add(titre);
+    }
+    if (auteur != null) {
+        sql.append(" auteur = ?,");
+        params.add(auteur);
+    }
+    if (isbn != null) {
+        sql.append(" isbn = ?,");
+        params.add(isbn);
+    }
+    sql.append(" quantity_total = ? WHERE id = ?");
+    params.add(quantity);
+    params.add(id);
+
+    try (PreparedStatement preparedStatement = connection.prepareStatement(sql.toString())) {
+
+        int parameterIndex = 1;
+        for (Object param : params) {
+            preparedStatement.setObject(parameterIndex++, param);
         }
 
-        // Initialize the SQL query
-        StringBuilder sql = new StringBuilder("UPDATE collection SET");
-
-        // Create an ArrayList to store the parameters that need to be updated
-        List<Object> params = new ArrayList<>();
-
-        // Check which fields are updated and add them to the SQL query
-        if (titre != null) {
-            sql.append(" titre = ?,");
-            params.add(titre);
+        int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            System.out.println("Collection modifiée avec succès !");
+        } else {
+            System.err.println("Échec de la modification de la collection.");
         }
-        if (auteur != null) {
-            sql.append(" auteur = ?,");
-            params.add(auteur);
-        }
-        if (isbn != null) {
-            sql.append(" isbn = ?,");
-            params.add(isbn);
-        }
-        sql.append(" quantity = ? WHERE id = ?");
-        params.add(quantity);
-        params.add(id);
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql.toString())) {
-            // Set the parameters based on the updates
-            int parameterIndex = 1;
-            for (Object param : params) {
-                preparedStatement.setObject(parameterIndex++, param);
-            }
-
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Collection modifiée avec succès !");
-            } else {
-                System.err.println("Échec de la modification de la collection.");
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (connection != null) {
+                connection.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
+}
 
 
     public void setQuantity_total(Integer quantity_total) {

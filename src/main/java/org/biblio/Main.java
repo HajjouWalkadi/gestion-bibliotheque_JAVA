@@ -6,6 +6,7 @@ package org.biblio;
 import org.biblio.console.Menu;
 import org.biblio.console.ReservationView;
 import org.biblio.controller.GlobalController;
+import org.biblio.model.Livre;
 import org.biblio.model.Search;
 import org.biblio.model.Statistiques;
 
@@ -19,14 +20,14 @@ public class Main {
 
     public static void main(String[] args) {
         connect();
-        //while (true) {
+        while (true) {
 
 
             Menu.showmenu();
             Menu.Options();
             int optionChoosed = sc.nextInt();
             executeFunctionality(optionChoosed);
-        //}
+       }
     }
 
 
@@ -39,7 +40,7 @@ public class Main {
                 break;
 
             case 2:
-
+                GlobalController.displayBook();
                 break;
             case 3:
                 GlobalController.updateBook();
@@ -74,7 +75,7 @@ public class Main {
                 Search searchTitle  = new Search();
                 System.out.println("Entrer le titre ");
                 String title = sc.nextLine();
-                // Search by title
+
                 searchTitle.searchByTitle(title);
 
                 break;
@@ -83,7 +84,7 @@ public class Main {
                 Search searchAuthor  = new Search();
                 System.out.println("Enter le nom d'auteur' ");
                 String author = sc.nextLine();
-                // Search by author
+
                 searchAuthor.searchByAuthor(author);
 
                 break;

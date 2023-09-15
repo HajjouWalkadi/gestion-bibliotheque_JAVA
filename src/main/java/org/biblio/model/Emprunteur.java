@@ -132,28 +132,6 @@ public class Emprunteur {
             }
         }
 
-        // Méthode pour supprimer un emprunteur par ID
-      /*  public void supprimerEmprunteur(int id) {
-            Connection connection = Db.connect();
-            if (connection == null) {
-                System.err.println("La connexion à la base de données a échoué.");
-                return;
-            }
-            String sql = "DELETE FROM emprunteurs WHERE id = ?";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setInt(1, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }*/
-
-
-
-
-
-
         }
 
 

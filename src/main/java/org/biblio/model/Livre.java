@@ -15,7 +15,12 @@ public class Livre {
     private String status;
     private Collection collection;
 
-    public Livre(int id, String numeroLivre, String status, Collection collection) {
+    public Livre(String numeroLivre, String status, Collection collection) {
+        this.numeroLivre = numeroLivre;
+        this.status = status;
+        this.collection = collection;
+    }
+    public Livre(int id,String numeroLivre, String status, Collection collection) {
         this.id = id;
         this.numeroLivre = numeroLivre;
         this.status = status;
@@ -129,6 +134,27 @@ public class Livre {
         }
     }
 
+ /*   public void displayBooks() {
+        Connection connection = Db.connect();
+        if (connection == null) {
+            System.err.println("La connexion à la base de données a échoué.");
+            return;
+        }
+        try {
+            // Prepare a SQL query to retrieve all books
+            String query = "SELECT * FROM livre";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            // Execute the query and retrieve the results
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            // Close resources
+            preparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }*/
 
 
     public void update() {
@@ -139,6 +165,7 @@ public class Livre {
         }
 
         String sql = "UPDATE livre SET numeroLivre = ?, status = ?, collection_id = ? WHERE id = ?";
+        System.out.println(collection.getId());
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, this.numeroLivre);
             preparedStatement.setString(2, this.status);
